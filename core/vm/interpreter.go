@@ -35,6 +35,8 @@ type Config struct {
 	ExtraEips               []int // Additional EIPS that are to be enabled
 
 	StatelessSelfValidation bool // Generate execution witnesses and self-check against them (testing purpose)
+
+	StatePrecompiles map[common.Address]PrecompiledStateContract // Added by Fantom for custom precompiled contract
 }
 
 // ScopeContext contains the things that are per-call, such as stack and memory,

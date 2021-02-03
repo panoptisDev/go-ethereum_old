@@ -47,6 +47,10 @@ type PrecompiledContract interface {
 	Run(input []byte) ([]byte, error) // Run runs the precompiled contract
 }
 
+type PrecompiledStateContract interface {
+	Run(stateDB StateDB, blockCtx BlockContext, txCtx TxContext, caller common.Address, input []byte, suppliedGas uint64) ([]byte, uint64, error) // Run runs the precompiled contract
+}
+
 // PrecompiledContracts contains the precompiled contracts supported at the given fork.
 type PrecompiledContracts map[common.Address]PrecompiledContract
 
