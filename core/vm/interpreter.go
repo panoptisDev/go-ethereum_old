@@ -38,7 +38,9 @@ type Config struct {
 	StatelessSelfValidation bool // Generate execution witnesses and self-check against them (testing purpose)
 
 	StatePrecompiles map[common.Address]PrecompiledStateContract // Added by Fantom for custom precompiled contract
-	InterpreterImpl  string                                      // The interpreter implementation to use
+
+	Interpreter           InterpreterFactory // The interpreter implementation to use for non-tracing executions. If nil, EVMInterpreter will be used.
+	InterpreterForTracing InterpreterFactory // The interpreter implementation to use for tracing executions. If nil, Interpreter will be used.
 }
 
 // ScopeContext contains the things that are per-call, such as stack and memory,

@@ -139,7 +139,7 @@ func NewEVM(blockCtx BlockContext, txCtx TxContext, statedb StateDB, chainConfig
 		chainRules:  chainConfig.Rules(blockCtx.BlockNumber, blockCtx.Random != nil, blockCtx.Time),
 	}
 	evm.precompiles = activePrecompiledContracts(evm.chainRules)
-	evm.interpreter = NewInterpreter(config.InterpreterImpl, evm, config)
+	evm.interpreter = getInterpreter(evm)
 	return evm
 }
 
