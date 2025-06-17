@@ -1,16 +1,29 @@
 package tests
 
 import (
-	"testing"
-
+	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/eth/tracers"
 	"github.com/ethereum/go-ethereum/internal/ethapi"
+	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
 // GetRPCApis returns a list of RPC APIs for testing
-func GetRPCApis(t *testing.T, apiBackend ethapi.Backend) []rpc.API {
-	apis := ethapi.GetAPIs(apiBackend)
+func GetRPCApis() []rpc.API {
+	backend := &dummyBackend{}
+	apis := ethapi.GetAPIs(backend)
 	apis = append(apis, tracers.APIs(nil)...)
 	return apis
+}
+
+type dummyBackend struct {
+	ethapi.Backend
+}
+
+func (b *dummyBackend) ChainConfig() *params.ChainConfig {
+	return &params.ChainConfig{}
+}
+
+func (b *dummyBackend) AccountManager() *accounts.Manager {
+	return nil
 }
