@@ -883,8 +883,11 @@ func RPCMarshalHeader(head *types.Header) map[string]interface{} {
 		"gasLimit":         hexutil.Uint64(head.GasLimit),
 		"gasUsed":          hexutil.Uint64(head.GasUsed),
 		"timestamp":        hexutil.Uint64(head.Time),
+		"timestampNano":    hexutil.Uint64(head.TimeNano),
 		"transactionsRoot": head.TxHash,
 		"receiptsRoot":     head.ReceiptHash,
+		"epoch":            (hexutil.Uint)(head.Epoch),
+		"totalDifficulty":  hexutil.Uint64(0),
 	}
 	if head.BaseFee != nil {
 		result["baseFeePerGas"] = (*hexutil.Big)(head.BaseFee)
@@ -894,9 +897,13 @@ func RPCMarshalHeader(head *types.Header) map[string]interface{} {
 	}
 	if head.BlobGasUsed != nil {
 		result["blobGasUsed"] = hexutil.Uint64(*head.BlobGasUsed)
+	} else {
+		result["blobGasUsed"] = hexutil.Uint64(0)
 	}
 	if head.ExcessBlobGas != nil {
 		result["excessBlobGas"] = hexutil.Uint64(*head.ExcessBlobGas)
+	} else {
+		result["excessBlobGas"] = hexutil.Uint64(0)
 	}
 	if head.ParentBeaconRoot != nil {
 		result["parentBeaconBlockRoot"] = head.ParentBeaconRoot

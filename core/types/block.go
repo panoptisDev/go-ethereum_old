@@ -106,6 +106,12 @@ type Header struct {
 
 	// RequestsHash was added by EIP-7685 and is ignored in legacy headers.
 	RequestsHash *common.Hash `json:"requestsHash" rlp:"optional"`
+
+	Epoch uint32 `json:"epoch" rlp:"optional"`
+
+	TimeNano uint64 `json:"timestampNano"        gencodec:"required"`
+
+	externalHash *common.Hash `rlp:"-"`
 }
 
 // field type overrides for gencodec
@@ -125,7 +131,15 @@ type headerMarshaling struct {
 // Hash returns the block hash of the header, which is simply the keccak256 hash of its
 // RLP encoding.
 func (h *Header) Hash() common.Hash {
+	if h.externalHash != nil {
+		return *h.externalHash
+	}
 	return rlpHash(h)
+}
+
+// SetExternalHash overrides hash with external value.
+func (h *Header) SetExternalHash(hash common.Hash) {
+	h.externalHash = &hash
 }
 
 var headerSize = common.StorageSize(reflect.TypeOf(Header{}).Size())
