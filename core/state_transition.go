@@ -406,14 +406,9 @@ func (st *stateTransition) preCheck() error {
 		}
 	}
 
-	// This is a Sonic specific check. Transactions coming from account zero are
-	// special transactions that do not need to adhere to the gas limit cap
-	// introduced in Osaka (EIP-7825).
-	if msg.From != (common.Address{}) {
-		// Verify tx gas limit does not exceed EIP-7825 cap.
-		if isOsaka && msg.GasLimit > st.evm.Config.MaxTxGas {
-			return fmt.Errorf("%w (cap: %d, tx: %d)", ErrGasLimitTooHigh, params.MaxTxGas, msg.GasLimit)
-		}
+	// Verify tx gas limit does not exceed EIP-7825 cap.
+	if isOsaka && msg.GasLimit > st.evm.Config.MaxTxGas {
+		return fmt.Errorf("%w (cap: %d, tx: %d)", ErrGasLimitTooHigh, st.evm.Config.MaxTxGas, msg.GasLimit)
 	}
 	return st.buyGas()
 }
