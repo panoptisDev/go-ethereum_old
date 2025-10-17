@@ -406,9 +406,15 @@ func (st *stateTransition) preCheck() error {
 		}
 	}
 
+	maxTxGas := params.MaxTxGas
+	// This is a Sonic specific modification. If config.MaxTxGas is set, use it instead of
+	// the default params.MaxTxGas.
+	if st.evm.Config.OverrideMaxTxGas {
+		maxTxGas = st.evm.Config.MaxTxGas
+	}
 	// Verify tx gas limit does not exceed EIP-7825 cap.
-	if isOsaka && msg.GasLimit > st.evm.Config.MaxTxGas {
-		return fmt.Errorf("%w (cap: %d, tx: %d)", ErrGasLimitTooHigh, st.evm.Config.MaxTxGas, msg.GasLimit)
+	if isOsaka && msg.GasLimit > maxTxGas {
+		return fmt.Errorf("%w (cap: %d, tx: %d)", ErrGasLimitTooHigh, maxTxGas, msg.GasLimit)
 	}
 	return st.buyGas()
 }
