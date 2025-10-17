@@ -50,8 +50,7 @@ type Config struct {
 	InsufficientBalanceIsNotAnError bool // if enabled, insufficient balance is treated as a revert, not an execution error on the top level
 	SkipTipPaymentToCoinbase        bool // if enabled, tip payment is not made to the coinbase address
 
-	OverrideMaxTxGas bool   // if enabled, MaxTxGas is used instead of the block gas limit to cap tx gas usage
-	MaxTxGas         uint64 // maximum gas allowed per transaction.
+	MaxTxGas *uint64 // maximum gas allowed per transaction.
 }
 
 // ScopeContext contains the things that are per-call, such as stack and memory,
