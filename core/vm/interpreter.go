@@ -50,7 +50,7 @@ type Config struct {
 	InsufficientBalanceIsNotAnError bool // if enabled, insufficient balance is treated as a revert, not an execution error on the top level
 	SkipTipPaymentToCoinbase        bool // if enabled, tip payment is not made to the coinbase address
 
-	// maximum gas allowed per transaction.
+	// MaxTxGas is the maximum gas allowed per transaction.
 	// If nil, this is interpreted as "not set" and the default params value is used.
 	MaxTxGas *uint64
 }
