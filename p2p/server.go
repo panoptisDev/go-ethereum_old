@@ -237,6 +237,7 @@ func (srv *Server) PeerCount() int {
 // the server will connect to the node. If the connection fails for any reason, the server
 // will attempt to reconnect the peer.
 func (srv *Server) AddPeer(node *enode.Node) {
+	fmt.Println("add static", node)
 	srv.dialsched.addStatic(node)
 }
 
@@ -252,6 +253,7 @@ func (srv *Server) RemovePeer(node *enode.Node) {
 	)
 	// Disconnect the peer on the main loop.
 	srv.doPeerOp(func(peers map[enode.ID]*Peer) {
+		fmt.Println("peerOp, RemovePeer")
 		srv.dialsched.removeStatic(node)
 		if peer := peers[node.ID()]; peer != nil {
 			ch = make(chan *PeerEvent, 1)
@@ -708,10 +710,15 @@ running:
 					activeOutboundPeerGauge.Inc(1)
 				}
 				activePeerGauge.Inc(1)
+			} else {
+				fmt.Println("addPeerChecks failed:", err)
 			}
 			c.cont <- err
 
 		case pd := <-srv.delpeer:
+
+			fmt.Println("peer disconected")
+
 			// A peer disconnected.
 			d := common.PrettyDuration(mclock.Now() - pd.created)
 			delete(peers, pd.ID())

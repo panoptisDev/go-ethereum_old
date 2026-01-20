@@ -280,14 +280,19 @@ loop:
 			id := node.ID()
 			_, exists := d.static[id]
 			d.log.Trace("Adding static node", "id", id, "endpoint", nodeEndpointForLog(node), "added", !exists)
+			fmt.Println("Adding static node", "id", id, "endpoint", nodeEndpointForLog(node), "added", !exists)
 			if exists {
+				fmt.Println("exists!")
 				continue loop
 			}
 			task := newDialTask(node, staticDialedConn)
 			d.static[id] = task
-			if d.checkDial(node) == nil {
-				d.addToStaticPool(task)
+			if err := d.checkDial(node); err != nil {
+				fmt.Println("failed to add peer", err)
+				continue loop
 			}
+			fmt.Println("pooled")
+			d.addToStaticPool(task)
 
 		case node := <-d.remStaticCh:
 			id := node.ID()
@@ -536,11 +541,15 @@ func (t *dialTask) dest() *enode.Node {
 }
 
 func (t *dialTask) run(d *dialScheduler) {
+
+	fmt.Println("run dial task")
 	if t.isStatic() {
+		fmt.Println(" - Static")
 		// Resolve DNS.
 		if n := t.dest(); n.Hostname() != "" {
 			resolved, err := d.dnsResolveHostname(n)
 			if err != nil {
+				fmt.Println(" - DNS failed")
 				d.log.Warn("DNS lookup of static node failed", "id", n.ID(), "name", n.Hostname(), "err", err)
 			} else {
 				t.destPtr.Store(resolved)
@@ -549,6 +558,7 @@ func (t *dialTask) run(d *dialScheduler) {
 		// Try resolving node ID through the DHT if there is no IP address.
 		if !t.dest().IPAddr().IsValid() {
 			if !t.resolve(d) {
+				fmt.Println(" - Resolve failed")
 				return // DHT resolve failed, skip dial.
 			}
 		}
@@ -556,6 +566,7 @@ func (t *dialTask) run(d *dialScheduler) {
 
 	err := t.dial(d, t.dest())
 	if err != nil {
+		fmt.Println("dial error", err)
 		// For static nodes, resolve one more time if dialing fails.
 		var dialErr *dialError
 		if errors.As(err, &dialErr) && t.isStatic() {
@@ -640,5 +651,5 @@ func nodeEndpointForLog(n *enode.Node) string {
 	if n.Hostname() != "" {
 		return n.Hostname()
 	}
-	return n.IPAddr().String()
+	return fmt.Sprintf("%v:%d", n.IPAddr().String(), n.TCP())
 }
