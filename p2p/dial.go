@@ -280,13 +280,17 @@ loop:
 			id := node.ID()
 			_, exists := d.static[id]
 			d.log.Trace("Adding static node", "id", id, "endpoint", nodeEndpointForLog(node), "added", !exists)
+			fmt.Println("Adding static node", "id", id, "endpoint", nodeEndpointForLog(node), "added", !exists)
 			if exists {
 				continue loop
 			}
 			task := newDialTask(node, staticDialedConn)
 			d.static[id] = task
-			if d.checkDial(node) == nil {
+
+			if err := d.checkDial(node); err == nil {
 				d.addToStaticPool(task)
+			} else {
+				fmt.Println("error check dial:", err)
 			}
 
 		case node := <-d.remStaticCh:
